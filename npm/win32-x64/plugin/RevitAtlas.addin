@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>RevitAtlas</Name>
+    <Assembly>RevitAtlas.dll</Assembly>
+    <FullClassName>RevitAtlas.App</FullClassName>
+    <AddInId>B8E5A6C4-3D2F-4A1E-9B8C-7D6E5F4A3B2C</AddInId>
+    <VendorId>RevitAtlas</VendorId>
+    <VendorDescription>RevitAtlas - MCP Server for Revit</VendorDescription>
+  </AddIn>
+</RevitAddIns>

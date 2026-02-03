@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/schemas/opencode.json",
+  "mcp": {
+    "revit": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["C:\\path\\to\\RevitMCP\\mcp-server\\dist\\index.js"],
+      "env": {
+        "REVIT_MCP_HOST": "127.0.0.1",
+        "REVIT_MCP_PORT": "8080",
+        "REVIT_MCP_TIMEOUT": "120000",
+        "REVIT_MCP_LOG_LEVEL": "info"
+      }
+    }
+  }
+}

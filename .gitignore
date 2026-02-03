@@ -1,0 +1,13 @@
+# Claude Code
+.claude/
+CLAUDE.md
+
+# Logs
+logs/
+
+# Windows
+nul
+Thumbs.db
+
+# Node
+node_modules/

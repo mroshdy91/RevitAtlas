@@ -1,0 +1,52 @@
+{
+  "name": "revitatlas",
+  "version": "1.0.9",
+  "description": "Connect AI assistants to Autodesk Revit via Model Context Protocol (MCP). Query, modify, and create BIM elements with 55+ tools.",
+  "type": "module",
+  "bin": {
+    "revitatlas": "bin/revitatlas.js"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "keywords": [
+    "revit",
+    "autodesk",
+    "bim",
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "cursor",
+    "ai",
+    "llm",
+    "architecture",
+    "engineering",
+    "construction"
+  ],
+  "files": [
+    "bin/",
+    "lib/",
+    "install.js",
+    "LICENSE",
+    "README.md"
+  ],
+  "os": [
+    "win32"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "optionalDependencies": {
+    "@revitatlas/win32-x64": "1.0.9"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mroshdy91/RevitAtlas.git"
+  },
+  "homepage": "https://github.com/mroshdy91/RevitAtlas",
+  "bugs": "https://github.com/mroshdy91/RevitAtlas/issues",
+  "publishConfig": {
+    "access": "public"
+  }
+}

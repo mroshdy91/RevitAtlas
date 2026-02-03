@@ -1,0 +1,27 @@
+{
+  "name": "@revitatlas/win32-x64",
+  "version": "1.0.9",
+  "description": "RevitAtlas platform binaries for Windows x64",
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "files": [
+    "bin/",
+    "modules/",
+    "plugin/",
+    "documents/"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mroshdy91/RevitAtlas.git"
+  },
+  "homepage": "https://github.com/mroshdy91/RevitAtlas",
+  "bugs": "https://github.com/mroshdy91/RevitAtlas/issues",
+  "publishConfig": {
+    "access": "public"
+  }
+}

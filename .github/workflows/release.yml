@@ -1,0 +1,101 @@
+name: Release & Publish to npm
+
+# This workflow runs in the PUBLIC RevitAtlas repo.
+# npm packages are pre-built locally by build.bat and synced here via Stage 7.
+# Push a version tag (v1.0.6) to trigger npm publish + GitHub Release.
+# Authentication: npm Trusted Publisher (OIDC) — no tokens needed.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Skip npm publish (dry run)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      # ── Extract version ────────────────────────────────────────────
+      - name: Extract version
+        id: ver
+        run: |
+          if [[ "${{ github.ref_name }}" =~ ^v(.+)$ ]]; then
+            V="${BASH_REMATCH[1]}"
+          else
+            V=$(node -p "require('./npm/revitatlas/package.json').version")
+          fi
+          echo "VERSION=$V"
+          echo "VERSION=$V" >> "$GITHUB_OUTPUT"
+
+      # ── Verify packages exist ──────────────────────────────────────
+      - name: Verify pre-built packages
+        run: |
+          echo "Checking npm/win32-x64..."
+          test -d npm/win32-x64/bin || { echo "ERROR: npm/win32-x64/bin not found. Run build.bat first."; exit 1; }
+          test -d npm/win32-x64/plugin || { echo "ERROR: npm/win32-x64/plugin not found. Run build.bat first."; exit 1; }
+          echo "  bin/: $(ls npm/win32-x64/bin/ | wc -l) files"
+          echo "  plugin/: $(ls npm/win32-x64/plugin/ | wc -l) files"
+
+          echo "Checking npm/revitatlas..."
+          test -f npm/revitatlas/package.json || { echo "ERROR: npm/revitatlas/package.json not found."; exit 1; }
+          test -d npm/revitatlas/lib || { echo "ERROR: npm/revitatlas/lib not found."; exit 1; }
+
+          echo "Packages verified. Version: ${{ steps.ver.outputs.VERSION }}"
+
+      # ── Sync version in package.json (if tag differs) ──────────────
+      - name: Sync version to package.json files
+        run: |
+          V="${{ steps.ver.outputs.VERSION }}"
+          node -e "
+            const fs = require('fs');
+            for (const f of ['npm/win32-x64/package.json', 'npm/revitatlas/package.json']) {
+              const pkg = JSON.parse(fs.readFileSync(f, 'utf8'));
+              pkg.version = '$V';
+              if (pkg.optionalDependencies && pkg.optionalDependencies['@revitatlas/win32-x64']) {
+                pkg.optionalDependencies['@revitatlas/win32-x64'] = '$V';
+              }
+              fs.writeFileSync(f, JSON.stringify(pkg, null, 2) + '\n');
+              console.log('  Updated ' + f + ' -> ' + '$V');
+            }
+          "
+
+      # ── Publish @revitatlas/win32-x64 ──────────────────────────────
+      - name: Publish @revitatlas/win32-x64
+        if: ${{ !inputs.dry_run }}
+        working-directory: npm/win32-x64
+        run: npm publish --access public --provenance
+
+      - name: Wait for npm registry propagation
+        if: ${{ !inputs.dry_run }}
+        run: sleep 15
+
+      # ── Publish revitatlas ─────────────────────────────────────────
+      - name: Publish revitatlas
+        if: ${{ !inputs.dry_run }}
+        working-directory: npm/revitatlas
+        run: npm publish --access public --provenance
+
+      # ── Create GitHub Release ──────────────────────────────────────
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: RevitAtlas v${{ steps.ver.outputs.VERSION }}
+          generate_release_notes: true
